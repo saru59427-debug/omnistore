@@ -174,6 +174,7 @@ function App() {
         setSearchQuery={setSearchQuery}
         cartCount={totalCartCount}
         onOpenCart={() => setIsCartOpen(true)}
+        products={productsData}
       />
 
       <main>
