@@ -1916,3 +1916,189 @@
     padding-right: 1rem;
   }
 }
+
+
+/* ============================================================
+   SEARCH AUTOCOMPLETE DROPDOWN
+   ============================================================ */
+
+/* Make the search box a positioning context */
+.search-box {
+  position: relative;
+}
+
+/* Dropdown container */
+.search-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  min-width: 360px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  z-index: 1100;
+  overflow: hidden;
+  animation: dropdownFadeIn 0.18s ease-out forwards;
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Dropdown header row */
+.search-dropdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.search-results-count {
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+/* Scrollable list */
+.search-dropdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+/* Each product row button */
+.search-dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.search-dropdown-item:hover {
+  background-color: var(--accent-light);
+}
+
+/* Thumbnail */
+.dropdown-item-img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+  background-color: var(--bg-muted);
+}
+
+/* Text block */
+.dropdown-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.dropdown-item-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.dropdown-item-cat {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.dropdown-item-price {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+/* Arrow icon */
+.dropdown-item-arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.search-dropdown-item:hover .dropdown-item-arrow {
+  color: var(--accent-primary);
+}
+
+/* Highlighted matching text */
+.search-highlight {
+  background-color: #fef9c3;
+  color: var(--text-primary);
+  font-weight: 700;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+/* Empty state */
+.search-dropdown-empty {
+  padding: 1.25rem 1rem;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+/* Footer "View all results" button */
+.search-dropdown-footer {
+  border-top: 1px solid var(--border-light);
+  padding: 0.5rem;
+}
+
+.search-view-all-btn {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  text-align: center;
+}
+
+.search-view-all-btn:hover {
+  background-color: var(--accent-light);
+}
+
+/* Mobile dropdown — full-width, relative positioning */
+.mobile-dropdown {
+  position: relative;
+  top: 8px;
+  left: 0;
+  right: 0;
+  min-width: unset;
+  width: 100%;
+}
