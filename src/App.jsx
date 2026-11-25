@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Header from './components/Header';
 import ProductGrid from './components/ProductGrid';
+import Cart from './components/Cart';
 import productsData from './data/products';
 import {
   ArrowRight,
@@ -21,8 +22,93 @@ import {
 import './App.css';
 
 function App() {
+  // 1. Search Query State (Controlled search input)
   const [searchQuery, setSearchQuery] = useState('');
+
+  // 2. Category Filter State
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  // 3. Shopping Cart State: Array of { id, title, price, qty, image, category }
+  const [cart, setCart] = useState([]);
+
+  // 4. Cart Drawer Panel Visibility State
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  /**
+   * Add a product to the cart.
+   * If the product already exists, immutably increment its quantity.
+   * Otherwise, append the new item with an initial quantity of 1.
+   *
+   * @param {Object} product
+   */
+  const addToCart = (product) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+        );
+      }
+      return [
+        ...prevCart,
+        {
+          id: product.id,
+          title: product.name,
+          price: product.price,
+          qty: 1,
+          image: product.image,
+          category: product.category
+        }
+      ];
+    });
+  };
+
+  /**
+   * Increase item quantity by 1.
+   * Uses immutable array update via map().
+   *
+   * @param {number|string} productId
+   */
+  const increaseQuantity = (productId) => {
+    setCart((prevCart) =>
+      prevCart.map((item) =>
+        item.id === productId ? { ...item, qty: item.qty + 1 } : item
+      )
+    );
+  };
+
+  /**
+   * Decrease item quantity by 1.
+   * If the quantity reaches 0, the item is removed from the cart.
+   * Uses immutable map() and filter().
+   *
+   * @param {number|string} productId
+   */
+  const decreaseQuantity = (productId) => {
+    setCart((prevCart) =>
+      prevCart
+        .map((item) =>
+          item.id === productId ? { ...item, qty: item.qty - 1 } : item
+        )
+        .filter((item) => item.qty > 0)
+    );
+  };
+
+  /**
+   * Remove an item completely from the cart regardless of quantity.
+   * Uses immutable array filter().
+   *
+   * @param {number|string} productId
+   */
+  const removeFromCart = (productId) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
+  };
+
+  /**
+   * Dynamic total cart items count (sum of quantities).
+   * Calculated using Array.prototype.reduce().
+   */
+  const totalCartCount = cart.reduce((total, item) => total + item.qty, 0);
 
   // Categories definition with icons and description
   const categories = [
@@ -63,7 +149,10 @@ function App() {
     }
   ];
 
-  // Filter products by search term and selected category
+  /**
+   * Filter products based on active category and live search query.
+   * Case-insensitive matching against product name and category.
+   */
   const filteredProducts = productsData.filter((product) => {
     const matchesCategory =
       selectedCategory === 'All' ||
@@ -72,19 +161,19 @@ function App() {
     const matchesSearch =
       searchQuery.trim() === '' ||
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase());
+      product.category.toLowerCase().includes(searchQuery.toLowerCase());
 
     return matchesCategory && matchesSearch;
   });
 
   return (
     <div className="app-wrapper">
-      {/* 1. Sticky Header */}
+      {/* 1. Sticky Header with Dynamic Cart Count & Live Search */}
       <Header
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        cartCount={0}
+        cartCount={totalCartCount}
+        onOpenCart={() => setIsCartOpen(true)}
       />
 
       <main>
@@ -111,7 +200,7 @@ function App() {
               <div className="hero-highlights">
                 <div className="highlight-item">
                   <CheckCircle2 size={18} className="highlight-icon" />
-                  <span>Free shipping over ₹999</span>
+                  <span>Free shipping over LKR 10,000</span>
                 </div>
                 <div className="highlight-item">
                   <CheckCircle2 size={18} className="highlight-icon" />
@@ -136,7 +225,7 @@ function App() {
           </div>
         </section>
 
-        {/* Value Proposition / Features Strip */}
+        {/* Value Proposition / Trust Features Strip */}
         <section className="features-strip">
           <div className="features-container">
             <div className="feature-item">
@@ -145,7 +234,7 @@ function App() {
               </div>
               <div>
                 <h4 className="feature-title">Fast Shipping</h4>
-                <p className="feature-desc">Free delivery on orders over ₹999</p>
+                <p className="feature-desc">Free delivery on orders over LKR 10,000</p>
               </div>
             </div>
 
@@ -224,6 +313,9 @@ function App() {
         <ProductGrid
           products={filteredProducts}
           activeCategory={selectedCategory}
+          onAddToCart={addToCart}
+          searchQuery={searchQuery}
+          onClearSearch={() => setSearchQuery('')}
         />
 
         {/* 5. Promotional / Spotlight Banner Section */}
@@ -271,13 +363,13 @@ function App() {
               </p>
               <div className="footer-contact-info">
                 <p className="contact-line">
-                  <MapPin size={16} /> 14 Indiranagar 100ft Road, Bengaluru, India
+                  <MapPin size={16} /> 42 Galle Road, Colombo 03, Sri Lanka
                 </p>
                 <p className="contact-line">
-                  <Phone size={16} /> +91 80 4123 4567 / +91 98 7654 3210
+                  <Phone size={16} /> +94 11 234 5678 / +94 77 123 4567
                 </p>
                 <p className="contact-line">
-                  <Mail size={16} /> hello@omnistore.in
+                  <Mail size={16} /> hello@omnistore.lk
                 </p>
               </div>
             </div>
@@ -337,14 +429,23 @@ function App() {
             <div className="payment-badges">
               <span className="pay-tag">Visa</span>
               <span className="pay-tag">MasterCard</span>
-              <span className="pay-tag">RuPay</span>
-              <span className="pay-tag">UPI</span>
-              <span className="pay-tag">Net Banking</span>
+              <span className="pay-tag">Amex</span>
+              <span className="pay-tag">LankaQR</span>
               <span className="pay-tag">Cash on Delivery</span>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* 7. Shopping Cart Drawer Panel */}
+      <Cart
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cart={cart}
+        onIncreaseQty={increaseQuantity}
+        onDecreaseQty={decreaseQuantity}
+        onRemoveItem={removeFromCart}
+      />
     </div>
   );
 }

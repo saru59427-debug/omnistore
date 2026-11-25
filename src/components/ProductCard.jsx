@@ -1,14 +1,18 @@
-import { ShoppingCart } from 'lucide-react';
+import { useState } from 'react';
+import { ShoppingCart, Check } from 'lucide-react';
 
 /**
  * ProductCard Component
  * Reusable card displaying an individual product's details:
- * image, title, category, formatted INR pricing, and an Add to Cart button.
+ * image, title, category, formatted LKR pricing, and an interactive Add to Cart button.
  *
  * @param {Object} props
  * @param {Object} props.product - The product object data
+ * @param {Function} props.onAddToCart - Callback triggered when user clicks Add to Cart
  */
-function ProductCard({ product }) {
+function ProductCard({ product, onAddToCart }) {
+  const [justAdded, setJustAdded] = useState(false);
+
   if (!product) return null;
 
   const {
@@ -20,25 +24,23 @@ function ProductCard({ product }) {
     description
   } = product;
 
-  // Format prices with price.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })
-  const formattedPrice = price.toLocaleString('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0
-  });
-
-  const formattedOriginalPrice = originalPrice
-    ? originalPrice.toLocaleString('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0
-      })
-    : null;
+  // Format prices in Sri Lankan Rupees (LKR)
+  const formatPrice = (amount) => {
+    return `LKR ${Number(amount).toLocaleString('en-US')}`;
+  };
 
   // Safe fallback placeholder if external image cannot be reached
   const handleImageError = (e) => {
     e.currentTarget.onerror = null;
     e.currentTarget.src = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80';
+  };
+
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart(product);
+      setJustAdded(true);
+      setTimeout(() => setJustAdded(false), 900);
+    }
   };
 
   return (
@@ -68,21 +70,31 @@ function ProductCard({ product }) {
 
         {/* Price Section */}
         <div className="product-pricing">
-          <span className="current-price">{formattedPrice}</span>
-          {formattedOriginalPrice && originalPrice > price && (
-            <span className="original-price">{formattedOriginalPrice}</span>
+          <span className="current-price">{formatPrice(price)}</span>
+          {originalPrice && originalPrice > price && (
+            <span className="original-price">{formatPrice(originalPrice)}</span>
           )}
         </div>
 
-        {/* Action Button */}
+        {/* Action Button: Add to Cart */}
         <div className="product-actions">
           <button
             type="button"
-            className="add-to-cart-btn"
+            className={`add-to-cart-btn ${justAdded ? 'added' : ''}`}
+            onClick={handleAddToCart}
             aria-label={`Add ${name} to cart`}
           >
-            <ShoppingCart size={16} className="btn-icon" />
-            <span>Add to Cart</span>
+            {justAdded ? (
+              <>
+                <Check size={16} className="btn-icon" />
+                <span>Added!</span>
+              </>
+            ) : (
+              <>
+                <ShoppingCart size={16} className="btn-icon" />
+                <span>Add to Cart</span>
+              </>
+            )}
           </button>
         </div>
       </div>

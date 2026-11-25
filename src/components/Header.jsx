@@ -3,10 +3,22 @@ import { Search, Menu, X, ShoppingCart } from 'lucide-react';
 
 /**
  * Header Component
- * Displays the sticky top navigation, brand logo, search input,
- * cart counter, and responsive mobile navigation drawer.
+ * Sticky top navigation containing brand logo, desktop nav links,
+ * live search input, shopping cart button with dynamic badge count,
+ * and responsive mobile navigation drawer.
+ *
+ * @param {Object} props
+ * @param {string} props.searchQuery - Controlled search input value
+ * @param {Function} props.setSearchQuery - Callback to update search query state
+ * @param {number} props.cartCount - Total quantity of items in cart
+ * @param {Function} props.onOpenCart - Callback to open the cart panel drawer
  */
-function Header({ searchQuery = '', setSearchQuery, cartCount = 0 }) {
+function Header({
+  searchQuery = '',
+  setSearchQuery,
+  cartCount = 0,
+  onOpenCart
+}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -20,6 +32,25 @@ function Header({ searchQuery = '', setSearchQuery, cartCount = 0 }) {
   const handleSearchChange = (e) => {
     if (setSearchQuery) {
       setSearchQuery(e.target.value);
+    }
+  };
+
+  const handleClearSearch = () => {
+    if (setSearchQuery) {
+      setSearchQuery('');
+    }
+  };
+
+  const handleCartClick = () => {
+    if (onOpenCart) {
+      onOpenCart();
+    }
+  };
+
+  const handleMobileCartClick = () => {
+    closeMobileMenu();
+    if (onOpenCart) {
+      onOpenCart();
     }
   };
 
@@ -52,31 +83,45 @@ function Header({ searchQuery = '', setSearchQuery, cartCount = 0 }) {
           </ul>
         </nav>
 
-        {/* Header Right Actions: Search & Cart */}
+        {/* Header Right Actions: Live Search & Dynamic Cart */}
         <div className="header-actions">
-          {/* Search Input Field */}
+          {/* Search Input Field (Controlled Component) */}
           <div className="search-box">
             <Search className="search-icon" size={18} />
             <input
               type="text"
-              placeholder="Search products..."
+              placeholder="Search products by title..."
               className="search-input"
               value={searchQuery}
               onChange={handleSearchChange}
-              aria-label="Search products"
+              aria-label="Search products by title"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                className="search-clear-btn"
+                onClick={handleClearSearch}
+                aria-label="Clear search input"
+                title="Clear search"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
 
-          {/* Cart Icon with Badge */}
+          {/* Cart Icon with Dynamic Badge Count & Click Handler */}
           <button
             type="button"
             className="cart-button"
-            aria-label="Shopping Cart"
-            title="Cart is empty"
+            onClick={handleCartClick}
+            aria-label={`Shopping Cart with ${cartCount} items`}
+            title={cartCount > 0 ? `View Cart (${cartCount} items)` : 'Shopping Cart is empty'}
           >
             <div className="cart-icon-wrapper">
               <ShoppingCart size={22} />
-              <span className="cart-badge">{cartCount}</span>
+              <span className="cart-badge" aria-live="polite">
+                {cartCount}
+              </span>
             </div>
           </button>
 
@@ -104,12 +149,22 @@ function Header({ searchQuery = '', setSearchQuery, cartCount = 0 }) {
               <Search className="search-icon" size={18} />
               <input
                 type="text"
-                placeholder="Search products..."
+                placeholder="Search products by title..."
                 className="search-input"
                 value={searchQuery}
                 onChange={handleSearchChange}
-                aria-label="Search products"
+                aria-label="Search products by title"
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="search-clear-btn"
+                  onClick={handleClearSearch}
+                  aria-label="Clear search input"
+                >
+                  <X size={14} />
+                </button>
+              )}
             </div>
 
             <nav className="mobile-nav">
@@ -138,10 +193,16 @@ function Header({ searchQuery = '', setSearchQuery, cartCount = 0 }) {
             </nav>
 
             <div className="mobile-menu-footer">
-              <div className="mobile-cart-indicator">
-                <ShoppingCart size={18} />
-                <span>Shopping Cart: <strong>{cartCount} items</strong></span>
-              </div>
+              <button
+                type="button"
+                className="mobile-cart-action-btn"
+                onClick={handleMobileCartClick}
+              >
+                <div className="mobile-cart-indicator">
+                  <ShoppingCart size={18} />
+                  <span>View Shopping Cart (<strong>{cartCount} items</strong>)</span>
+                </div>
+              </button>
             </div>
           </div>
         </div>
