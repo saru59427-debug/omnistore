@@ -29,10 +29,9 @@ function Cart({
   // Calculate total item quantity using Array.prototype.reduce()
   const totalItemCount = cart.reduce((total, item) => total + item.qty, 0);
 
-  // Format currency in Sri Lankan Rupees (LKR)
-  const formatPrice = (amount) => {
-    return `LKR ${Number(amount).toLocaleString('en-US')}`;
-  };
+  // Format currency in Indian Rupees (INR)
+  const formatPrice = (amount) =>
+    Number(amount).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
 
   if (!isOpen) return null;
 

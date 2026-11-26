@@ -24,10 +24,9 @@ function ProductCard({ product, onAddToCart }) {
     description
   } = product;
 
-  // Format prices in Sri Lankan Rupees (LKR)
-  const formatPrice = (amount) => {
-    return `LKR ${Number(amount).toLocaleString('en-US')}`;
-  };
+  // Format prices in Indian Rupees (INR)
+  const formatPrice = (amount) =>
+    Number(amount).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
 
   // Safe fallback placeholder if external image cannot be reached
   const handleImageError = (e) => {

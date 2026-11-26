@@ -137,7 +137,8 @@ function Header({
   };
 
   // Format currency
-  const formatPrice = (amount) => `LKR ${Number(amount).toLocaleString('en-US')}`;
+  const formatPrice = (amount) =>
+    Number(amount).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
 
   return (
     <header className="site-header">

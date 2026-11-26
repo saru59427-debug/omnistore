@@ -18,10 +18,9 @@ function CartItem({ item, onIncrease, onDecrease, onRemove }) {
   const { id, title, price, qty, image } = item;
   const subtotal = price * qty;
 
-  // Format price in Sri Lankan Rupees (LKR)
-  const formatPrice = (amount) => {
-    return `LKR ${Number(amount).toLocaleString('en-US')}`;
-  };
+  // Format price in Indian Rupees (INR)
+  const formatPrice = (amount) =>
+    Number(amount).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
 
   const handleImageError = (e) => {
     e.currentTarget.onerror = null;

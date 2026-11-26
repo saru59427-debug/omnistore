@@ -201,7 +201,7 @@ function App() {
               <div className="hero-highlights">
                 <div className="highlight-item">
                   <CheckCircle2 size={18} className="highlight-icon" />
-                  <span>Free shipping over LKR 10,000</span>
+                  <span>Free shipping over ₹10,000</span>
                 </div>
                 <div className="highlight-item">
                   <CheckCircle2 size={18} className="highlight-icon" />
@@ -235,7 +235,7 @@ function App() {
               </div>
               <div>
                 <h4 className="feature-title">Fast Shipping</h4>
-                <p className="feature-desc">Free delivery on orders over LKR 10,000</p>
+                <p className="feature-desc">Free delivery on orders over ₹10,000</p>
               </div>
             </div>
 
