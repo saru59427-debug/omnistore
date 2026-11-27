@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Check, Star, Eye } from 'lucide-react';
+import { ShoppingCart, Check, Eye } from 'lucide-react';
 
 /**
  * ProductCard Component
  * Reusable card displaying an individual product's details:
- * image, title, category, rating, formatted INR pricing,
- * "View Details" navigation link to /product/:id,
- * and an interactive Add to Cart button.
+ * image, title, category, formatted INR pricing,
+ * properly aligned "Details" button linking to /product/:id,
+ * and an interactive "Add to Cart" button.
  *
  * @param {Object} props
  * @param {Object} props.product - The product object data (DummyJSON or custom)
@@ -22,9 +22,11 @@ function ProductCard({ product, onAddToCart }) {
   const name = product.title || product.name || 'Untitled Product';
   const category = product.category || 'General';
   const price = product.price || 0;
-  const image = product.thumbnail || product.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80';
+  const image =
+    product.thumbnail ||
+    product.image ||
+    'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80';
   const description = product.description || '';
-  const rating = product.rating || null;
 
   // Calculate original price from discountPercentage if available
   const originalPrice = product.originalPrice
@@ -57,7 +59,11 @@ function ProductCard({ product, onAddToCart }) {
   return (
     <div className="product-card">
       {/* Product Image Container with Link to Product Detail */}
-      <Link to={`/product/${id}`} className="product-image-container" aria-label={`View details for ${name}`}>
+      <Link
+        to={`/product/${id}`}
+        className="product-image-container"
+        aria-label={`View details for ${name}`}
+      >
         <img
           src={image}
           alt={name}
@@ -74,15 +80,7 @@ function ProductCard({ product, onAddToCart }) {
 
       {/* Card Content Body */}
       <div className="product-content">
-        <div className="product-meta-row">
-          <span className="product-category">{category}</span>
-          {rating && (
-            <div className="product-card-rating">
-              <Star size={13} className="star-filled" fill="currentColor" />
-              <span>{typeof rating === 'number' ? rating.toFixed(1) : rating}</span>
-            </div>
-          )}
-        </div>
+        <span className="product-category">{category}</span>
 
         <h3 className="product-title" title={name}>
           <Link to={`/product/${id}`} className="product-title-link">
@@ -102,12 +100,12 @@ function ProductCard({ product, onAddToCart }) {
           )}
         </div>
 
-        {/* Action Buttons: View Details & Add to Cart */}
+        {/* Action Buttons: View Details & Add to Cart properly aligned */}
         <div className="product-actions">
           <Link
             to={`/product/${id}`}
-            className="btn btn-secondary view-details-btn"
-            title="View full product details"
+            className="view-details-btn"
+            title={`View details for ${name}`}
           >
             <Eye size={15} className="btn-icon" />
             <span>Details</span>
@@ -127,7 +125,7 @@ function ProductCard({ product, onAddToCart }) {
             ) : (
               <>
                 <ShoppingCart size={16} className="btn-icon" />
-                <span>Add</span>
+                <span>Add to Cart</span>
               </>
             )}
           </button>

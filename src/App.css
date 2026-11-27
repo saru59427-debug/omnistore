@@ -833,24 +833,70 @@
   font-weight: 500;
 }
 
-/* Add to Cart Button */
+/* Product Card Action Buttons (Details & Add to Cart) */
 .product-actions {
-  width: 100%;
-}
-
-.add-to-cart-btn {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  margin-top: auto;
+}
+
+.view-details-btn {
+  flex: 1;
+  min-width: 0;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.6rem 0.65rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+  box-sizing: border-box;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.view-details-btn:hover {
+  background-color: var(--accent-light);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.view-details-btn .btn-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.view-details-btn:hover .btn-icon {
+  color: var(--accent-primary);
+}
+
+.add-to-cart-btn {
+  flex: 1.25;
+  min-width: 0;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.65rem;
   border-radius: var(--radius-md);
   background-color: var(--bg-muted);
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 600;
   border: 1px solid var(--border-light);
+  box-sizing: border-box;
+  white-space: nowrap;
+  cursor: pointer;
   transition: all var(--transition-normal);
 }
 
@@ -1468,16 +1514,24 @@
     font-size: 0.72rem;
   }
 
+  .product-actions {
+    gap: 0.35rem;
+  }
+
+  .view-details-btn,
   .add-to-cart-btn {
-    padding: 0.5rem 0.4rem;
+    height: 34px;
+    padding: 0.4rem 0.35rem;
     font-size: 0.75rem;
-    gap: 0.3rem;
+    gap: 0.25rem;
     border-radius: var(--radius-sm);
   }
 
+  .view-details-btn .btn-icon,
   .add-to-cart-btn .btn-icon {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
   }
 
   /* Promo Section Mobile */
@@ -2146,25 +2200,6 @@
 }
 
 /* ProductCard Week 3 Enhancements */
-.product-meta-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.25rem;
-}
-
-.product-card-rating {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #d97706;
-  background-color: #fef3c7;
-  padding: 0.15rem 0.45rem;
-  border-radius: var(--radius-full);
-}
-
 .product-discount-pill {
   position: absolute;
   top: 10px;
@@ -2187,19 +2222,6 @@
 
 .product-title-link:hover {
   color: var(--accent-primary);
-}
-
-.view-details-btn {
-  flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  padding: 0.55rem 0.75rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  text-decoration: none;
 }
 
 /* ProductGrid Status Boxes (Loading & Error States) */
