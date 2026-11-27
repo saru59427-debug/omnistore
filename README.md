@@ -1,43 +1,46 @@
 # OmniStore – Modern E-Commerce Website
 
-OmniStore is a modern, responsive, component-driven e-commerce frontend built with **React.js** and **Vite** for the SkillMe Frontend Engineer Virtual Internship.
+OmniStore is a modern, responsive, component-driven e-commerce frontend built with **React.js**, **React Router DOM**, and **Vite** for the SkillMe Frontend Engineer Virtual Internship.
 
-It features a clean, human-crafted design with professional typography, interactive category filtering, live product search with instant feedback, a fully functional shopping cart drawer with quantity controls, and accurate pricing in Sri Lankan Rupees (LKR).
+It features a clean design, live product data fetched from the DummyJSON REST API, client-side routing with individual product detail pages, interactive category filtering, live autocomplete search, a functional shopping cart drawer with quantity management, and formatted pricing.
 
 ---
 
-## 🚀 Features (Week 1 & Week 2)
+## 🚀 Features (Week 1, Week 2 & Week 3)
 
-### 🛒 Functional Shopping Cart (Week 2)
-- **Add to Cart on Every Card**: Clicking "Add to Cart" adds the selected product to the cart with instant visual confirmation.
-- **Smart Duplicate Handling**: Adding the same product again increases its quantity (`qty`) immutably instead of creating duplicate rows.
-- **Modern Cart Drawer Panel**: A sliding side drawer accessible by clicking the cart icon in the header or mobile menu.
-- **Quantity Controls**: Inline `(+)` and `(-)` buttons that increment or decrement quantity immediately.
-- **Auto-Removal on Zero**: Decreasing quantity to zero automatically removes the item from the cart via immutable `filter()`.
-- **Direct Item Removal**: Dedicated trash button to instantly remove a line item.
-- **Subtotal & Cart Total Calculation**: Computed dynamically using JavaScript's `reduce()` method.
-- **Empty Cart State**: Friendly empty-cart view with an illustration and "Continue Shopping" button.
+### 🌐 Real Product Data & REST API Integration (Week 3)
+- **DummyJSON API Integration**: Fetches 30 dynamic products directly from `https://dummyjson.com/products?limit=30` using native `fetch()` and React `useEffect([])`.
+- **Loading & Error Handling**: Displays a loading spinner while fetching, and a friendly error state with a **"Retry Loading"** button if the request fails (checks `response.ok`).
+- **Dynamic Category Filtering**: Dynamically derives categories and item counts from the fetched API catalog.
 
-### 🔍 Live Product Search (Week 2)
-- **Controlled Search Input**: Fast, real-time search field in the header that filters products as the user types.
-- **Case-Insensitive Filtering**: Searches titles and categories without modifying the original product data.
-- **Empty Search Feedback**: Displays a friendly "No products found" state with a one-click "Clear Search Filter" button when no results match.
-- **One-Click Clear (X)**: Easily clear the search query from the input field.
+### 🧭 React Router DOM Client-Side Routing (Week 3)
+- **`/` (Home)**: Complete homepage featuring hero banner, trust indicators, category cards, and responsive product grid.
+- **`/product/:id` (Product Detail)**: Dynamic single-product detail page reading `:id` via `useParams()`, fetching `https://dummyjson.com/products/:id` with image gallery, thumbnails, rating, price, stock status, description, and "Add to Cart" button.
+- **`*` (Custom 404 Not Found)**: Dedicated Not Found page with friendly explanation and one-click "Return to Home" button.
+- **Seamless Navigation**: Zero full-page browser reloads using `<Link>` and `useNavigate()`.
 
-### 📱 Responsive Layout & Design System
-- **2x2 Product Grid on Mobile**: Clean two-column grid on smartphones and small viewports with symmetrical card heights.
-- **Adaptive Layouts**: 4 columns on large desktops, 2 columns on tablets, and 2 columns on mobile.
-- **Custom Branding**: Integrated custom brand logo (`logo.png`) in the header, footer, and browser tab icon.
-- **Zero Broken Images**: Tested direct product photos with automatic placeholder fallback handling (`onError`).
+### 🛒 Functional Shopping Cart (Week 2 & Week 3)
+- **Add to Cart Anywhere**: Works seamlessly both from home product cards and individual product detail pages.
+- **Smart Duplicate Handling**: Adding the same product increases quantity (`qty`) immutably instead of creating duplicate rows.
+- **Slide-In Cart Drawer**: Sliding drawer panel accessible from the header shopping cart button with dynamic badge counter.
+- **Quantity Controls**: Inline `(+)` and `(-)` controls with automatic item removal on zero.
+- **Subtotal & Total Calculation**: Dynamically calculated on every render using JavaScript `reduce()` (not stored in state).
+
+### 🔍 Live Product Search & Autocomplete
+- **Controlled Search Input**: Fast search field in header with live matching products dropdown.
+- **Highlighted Matches**: Yellow `<mark>` highlighting for matching search characters.
+- **One-Click Clear**: Quick `(X)` button to clear search filter.
 
 ---
 
 ## 🛠️ Tech Stack
 
 - **Framework**: [React.js](https://react.dev/) (v19 functional components & hooks)
+- **Routing**: [React Router DOM](https://reactrouter.com/) (v7 with `BrowserRouter`, `Routes`, `Route`, `Link`, `useParams`, `useNavigate`)
+- **API**: Native `fetch()` with [DummyJSON REST API](https://dummyjson.com/)
 - **Bundler & Dev Server**: [Vite](https://vite.dev/) (v8)
 - **Language**: JavaScript (JSX / ES6+)
-- **State Management**: React `useState` hook with immutable array updates (`map`, `filter`, `reduce`)
+- **State Management**: React `useState` & `useEffect` with immutable array updates (`map`, `filter`, `reduce`)
 - **Styling**: Vanilla CSS3 with Custom Properties (Variables), Flexbox, and CSS Grid
 - **Icons**: [Lucide React](https://lucide.dev/)
 
@@ -54,98 +57,64 @@ omnistore/
 ├── src/
 │   ├── assets/              # Static local assets
 │   ├── components/
-│   │   ├── Cart.jsx         # Modern slide-in shopping cart drawer panel
+│   │   ├── Cart.jsx         # Slide-in shopping cart drawer panel
 │   │   ├── CartItem.jsx     # Individual cart line item with quantity controls & subtotal
-│   │   ├── Header.jsx       # Sticky header with live search & dynamic cart counter
-│   │   ├── ProductCard.jsx  # Reusable product card with image zoom & Add to Cart button
-│   │   └── ProductGrid.jsx  # Responsive 4-col/2-col catalog grid rendering cards with map()
+│   │   ├── Header.jsx       # Header with live search autocomplete & cart count
+│   │   ├── ProductCard.jsx  # Reusable product card with View Details & Add to Cart
+│   │   └── ProductGrid.jsx  # Responsive grid with loading, error, and empty states
+│   ├── pages/
+│   │   ├── Home.jsx         # Homepage route component (/)
+│   │   ├── ProductDetail.jsx# Product detail page route (/product/:id)
+│   │   └── NotFound.jsx     # 404 Not Found route (*)
 │   ├── data/
-│   │   └── products.js      # Local product catalog data (12 products in LKR)
-│   ├── App.jsx              # Central parent component managing Cart & Search state
-│   ├── App.css              # Component, drawer animations, and layout styling
-│   ├── index.css            # Global CSS variables, reset, and design tokens
-│   └── main.jsx             # React DOM root entry point
-├── index.html               # Main HTML template with Plus Jakarta Sans & no-referrer meta
-├── package.json             # Scripts and dependencies
+│   │   └── products.js      # Reference catalog dataset
+│   ├── App.jsx              # Parent root component with Router, state & API fetch
+│   ├── App.css              # Global styles, layout, responsive design & animations
+│   ├── index.css            # Base reset & font definitions
+│   └── main.jsx             # Application entry point
+├── index.html               # Main HTML document template
+├── package.json             # Dependencies and build scripts
 └── vite.config.js           # Vite configuration
 ```
 
 ---
 
-## 🧠 React State Architecture (`App.jsx`)
+## 🏁 How to Run Locally
 
-All core state and state mutators are centralized in `App.jsx` and passed down via React props:
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/saru59427-debug/omnistore.git
+   cd omnistore
+   ```
 
-| State Variable | Type | Purpose |
-|---|---|---|
-| `cart` | `Array<Object>` | Stores items in cart: `{ id, title, price, qty, image, category }` |
-| `searchQuery` | `string` | Stores the active search text entered by the user |
-| `selectedCategory` | `string` | Stores active department filter ("All", "Electronics", etc.) |
-| `isCartOpen` | `boolean` | Controls visibility of the slide-in shopping cart drawer |
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-### Key Functions Passed via Props
-- `addToCart(product)`: Appends a new item or increments `qty` immutably using `map()`.
-- `increaseQuantity(productId)`: Increments item `qty` by 1.
-- `decreaseQuantity(productId)`: Decrements item `qty` by 1, automatically filtering out items when `qty === 0`.
-- `removeFromCart(productId)`: Filters out the specified product from `cart`.
-- `totalCartCount`: Derived via `cart.reduce((total, item) => total + item.qty, 0)`.
+3. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
 
----
-
-## 📦 Getting Started
-
-### Prerequisites
-
-Ensure you have **Node.js** (v18.0.0 or higher) installed.
-
-### 1. Install Dependencies
-
-```bash
-npm install
-```
-
-### 2. Start Development Server
-
-```bash
-npm run dev
-```
-
-Open your browser and navigate to `http://localhost:5173`.
-
-### 3. Build for Production
-
-```bash
-npm run build
-```
-
-### 4. Run Linter
-
-```bash
-npm run lint
-```
+4. **Build for production**:
+   ```bash
+   npm run build
+   ```
 
 ---
 
-## ✅ Week 2 Demonstration Checklist
+## 📋 Week 3 Demonstration Checklist
 
-Use this checklist to verify or demonstrate the Week 2 deliverables:
-
-1. [x] **Add to Cart**: Click "Add to Cart" on any product card — item is added and the header badge updates.
-2. [x] **Duplicate Prevention**: Click "Add to Cart" again on the same product — quantity increments to `2` without creating a duplicate row.
-3. [x] **Open Cart Drawer**: Click the shopping cart icon in the header or mobile menu to open the slide-in panel.
-4. [x] **Quantity Increase**: Click the `(+)` button in the cart — quantity and item subtotal increase immediately.
-5. [x] **Quantity Decrease**: Click the `(-)` button in the cart — quantity and item subtotal decrease immediately.
-6. [x] **Zero Removal**: Decrease an item's quantity to `0` — the item is automatically removed from the cart.
-7. [x] **Direct Removal**: Click the trash icon on any cart item — item is immediately removed.
-8. [x] **Total Calculation**: Confirm the cart total matches the sum of all item subtotals.
-9. [x] **Dynamic Header Count**: Confirm the badge in the header shows the exact sum of all item quantities.
-10. [x] **Live Search (Match)**: Type "Sony" or "Watch" into the search box — product list filters instantly.
-11. [x] **Live Search (No Match)**: Type "xyz" — friendly "No products found" message and clear button appear.
-12. [x] **Clear Search**: Click "Clear Search Filter" or the input `(X)` icon — full catalog restores immediately.
-13. [x] **Responsive 2x2 Grid**: Shrink browser window or open on mobile — product cards align cleanly in a 2x2 grid.
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
+- [x] **API Integration**: Fetches 30 products from `https://dummyjson.com/products?limit=30` using native `fetch()` in `useEffect([])`.
+- [x] **Loading State**: Displays loading message and spinner while fetching.
+- [x] **Error State & Retry**: Friendly error box with "Retry Loading" button checking `response.ok`.
+- [x] **React Router DOM**: Installed and configured routes for `/`, `/product/:id`, and `*`.
+- [x] **Product Detail Page**: Reads `:id` with `useParams()`, fetches `https://dummyjson.com/products/:id`, displays image gallery, rating, price, brand, description, and stock.
+- [x] **View Details Navigation**: Product cards navigate to `/product/:id` via `<Link>`.
+- [x] **Back to Products Button**: Navigation back to `/` using `useNavigate()`.
+- [x] **Invalid Product ID Handling**: Friendly error message with retry and return home buttons.
+- [x] **Custom 404 Page**: Professional Not Found page for unknown routes.
+- [x] **Cart Compatibility**: "Add to Cart" works identically from product cards and product detail pages.
+- [x] **Live Search**: Autocomplete and search grid work seamlessly with API product titles.
+- [x] **Zero Build/Lint Errors**: Passes `npm run lint` and `npm run build` cleanly.

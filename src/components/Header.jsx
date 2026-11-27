@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Search, Menu, X, ShoppingCart, ArrowUpRight } from 'lucide-react';
 
 /**
@@ -27,6 +28,7 @@ function Header({
 
   const desktopSearchRef = useRef(null);
   const mobileSearchRef = useRef(null);
+  const navigate = useNavigate();
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -94,35 +96,52 @@ function Header({
     }
   };
 
-  // Select a product from the dropdown
-  const handleSelectProduct = (productName) => {
-    if (setSearchQuery) {
-      setSearchQuery(productName);
-    }
+  // Select a product from the dropdown: navigates directly to product detail page
+  const handleSelectProduct = (product) => {
     setDesktopDropdownOpen(false);
     setMobileDropdownOpen(false);
     closeMobileMenu();
+    navigate(`/product/${product.id}`);
+  };
 
-    // Scroll to products section smoothly
-    const section = document.getElementById('products');
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
+  // View all matching results in grid: navigates to home with filter
+  const handleViewAllResults = () => {
+    setDesktopDropdownOpen(false);
+    setMobileDropdownOpen(false);
+    closeMobileMenu();
+    navigate('/');
+    setTimeout(() => {
+      const section = document.getElementById('products');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
+  const handleNavClick = (hash) => {
+    closeMobileMenu();
+    navigate('/');
+    if (hash) {
+      setTimeout(() => {
+        const el = document.getElementById(hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     }
   };
 
-  // Filter matching products
+  // Filter matching products supporting both title/name and category
   const trimmedQuery = searchQuery.trim().toLowerCase();
   const matchingProducts = trimmedQuery
-    ? products.filter(
-        (p) =>
-          p.name.toLowerCase().includes(trimmedQuery) ||
-          p.category.toLowerCase().includes(trimmedQuery)
-      )
+    ? products.filter((p) => {
+        const title = (p.title || p.name || '').toLowerCase();
+        const cat = (p.category || '').toLowerCase();
+        return title.includes(trimmedQuery) || cat.includes(trimmedQuery);
+      })
     : [];
 
   // Helper to highlight matching text in product title
   const highlightMatch = (text, query) => {
-    if (!query) return text;
+    if (!query || !text) return text;
     const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
     const parts = text.split(regex);
     return parts.map((part, index) =>
@@ -136,7 +155,7 @@ function Header({
     );
   };
 
-  // Format currency
+  // Format currency in INR
   const formatPrice = (amount) =>
     Number(amount).toLocaleString('en-IN', { style: 'currency', currency: 'INR' });
 
@@ -144,27 +163,35 @@ function Header({
     <header className="site-header">
       <div className="header-container">
         {/* Brand Logo & Name */}
-        <a href="#home" className="brand-logo" onClick={closeMobileMenu}>
+        <Link to="/" className="brand-logo" onClick={closeMobileMenu}>
           <img src="/logo.png" alt="OmniStore Logo" className="brand-logo-img" />
           <span className="brand-name">
             Omni<span className="brand-accent">Store</span>
           </span>
-        </a>
+        </Link>
 
         {/* Desktop Navigation Links */}
         <nav className="desktop-nav" aria-label="Main Navigation">
           <ul className="nav-list">
             <li>
-              <a href="#home" className="nav-link active">Home</a>
+              <button type="button" className="nav-link-btn" onClick={() => handleNavClick('home')}>
+                Home
+              </button>
             </li>
             <li>
-              <a href="#products" className="nav-link">Products</a>
+              <button type="button" className="nav-link-btn" onClick={() => handleNavClick('products')}>
+                Products
+              </button>
             </li>
             <li>
-              <a href="#categories" className="nav-link">Categories</a>
+              <button type="button" className="nav-link-btn" onClick={() => handleNavClick('categories')}>
+                Categories
+              </button>
             </li>
             <li>
-              <a href="#about" className="nav-link">About</a>
+              <button type="button" className="nav-link-btn" onClick={() => handleNavClick('about')}>
+                About
+              </button>
             </li>
           </ul>
         </nav>
@@ -210,36 +237,40 @@ function Header({
 
                 {matchingProducts.length > 0 ? (
                   <ul className="search-dropdown-list">
-                    {matchingProducts.slice(0, 6).map((item) => (
-                      <li key={item.id}>
-                        <button
-                          type="button"
-                          className="search-dropdown-item"
-                          onClick={() => handleSelectProduct(item.name)}
-                        >
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="dropdown-item-img"
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src =
-                                'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=120&q=80';
-                            }}
-                          />
-                          <div className="dropdown-item-info">
-                            <span className="dropdown-item-title">
-                              {highlightMatch(item.name, trimmedQuery)}
-                            </span>
-                            <div className="dropdown-item-meta">
-                              <span className="dropdown-item-cat">{item.category}</span>
-                              <span className="dropdown-item-price">{formatPrice(item.price)}</span>
+                    {matchingProducts.slice(0, 6).map((item) => {
+                      const itemTitle = item.title || item.name || '';
+                      const itemImage = item.thumbnail || item.image || '';
+                      return (
+                        <li key={item.id}>
+                          <button
+                            type="button"
+                            className="search-dropdown-item"
+                            onClick={() => handleSelectProduct(item)}
+                          >
+                            <img
+                              src={itemImage}
+                              alt={itemTitle}
+                              className="dropdown-item-img"
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src =
+                                  'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=120&q=80';
+                              }}
+                            />
+                            <div className="dropdown-item-info">
+                              <span className="dropdown-item-title">
+                                {highlightMatch(itemTitle, trimmedQuery)}
+                              </span>
+                              <div className="dropdown-item-meta">
+                                <span className="dropdown-item-cat">{item.category}</span>
+                                <span className="dropdown-item-price">{formatPrice(item.price)}</span>
+                              </div>
                             </div>
-                          </div>
-                          <ArrowUpRight size={14} className="dropdown-item-arrow" />
-                        </button>
-                      </li>
-                    ))}
+                            <ArrowUpRight size={14} className="dropdown-item-arrow" />
+                          </button>
+                        </li>
+                      );
+                    })}
                   </ul>
                 ) : (
                   <div className="search-dropdown-empty">
@@ -252,7 +283,7 @@ function Header({
                     <button
                       type="button"
                       className="search-view-all-btn"
-                      onClick={() => handleSelectProduct(searchQuery)}
+                      onClick={handleViewAllResults}
                     >
                       View all results in catalog
                     </button>
@@ -335,30 +366,34 @@ function Header({
 
                   {matchingProducts.length > 0 ? (
                     <ul className="search-dropdown-list">
-                      {matchingProducts.slice(0, 5).map((item) => (
-                        <li key={item.id}>
-                          <button
-                            type="button"
-                            className="search-dropdown-item"
-                            onClick={() => handleSelectProduct(item.name)}
-                          >
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="dropdown-item-img"
-                            />
-                            <div className="dropdown-item-info">
-                              <span className="dropdown-item-title">
-                                {highlightMatch(item.name, trimmedQuery)}
-                              </span>
-                              <div className="dropdown-item-meta">
-                                <span className="dropdown-item-cat">{item.category}</span>
-                                <span className="dropdown-item-price">{formatPrice(item.price)}</span>
+                      {matchingProducts.slice(0, 5).map((item) => {
+                        const itemTitle = item.title || item.name || '';
+                        const itemImage = item.thumbnail || item.image || '';
+                        return (
+                          <li key={item.id}>
+                            <button
+                              type="button"
+                              className="search-dropdown-item"
+                              onClick={() => handleSelectProduct(item)}
+                            >
+                              <img
+                                src={itemImage}
+                                alt={itemTitle}
+                                className="dropdown-item-img"
+                              />
+                              <div className="dropdown-item-info">
+                                <span className="dropdown-item-title">
+                                  {highlightMatch(itemTitle, trimmedQuery)}
+                                </span>
+                                <div className="dropdown-item-meta">
+                                  <span className="dropdown-item-cat">{item.category}</span>
+                                  <span className="dropdown-item-price">{formatPrice(item.price)}</span>
+                                </div>
                               </div>
-                            </div>
-                          </button>
-                        </li>
-                      ))}
+                            </button>
+                          </li>
+                        );
+                      })}
                     </ul>
                   ) : (
                     <div className="search-dropdown-empty">
@@ -372,24 +407,40 @@ function Header({
             <nav className="mobile-nav">
               <ul className="mobile-nav-list">
                 <li>
-                  <a href="#home" className="mobile-nav-link" onClick={closeMobileMenu}>
+                  <button
+                    type="button"
+                    className="mobile-nav-link-btn"
+                    onClick={() => handleNavClick('home')}
+                  >
                     Home
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#products" className="mobile-nav-link" onClick={closeMobileMenu}>
+                  <button
+                    type="button"
+                    className="mobile-nav-link-btn"
+                    onClick={() => handleNavClick('products')}
+                  >
                     Products
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#categories" className="mobile-nav-link" onClick={closeMobileMenu}>
+                  <button
+                    type="button"
+                    className="mobile-nav-link-btn"
+                    onClick={() => handleNavClick('categories')}
+                  >
                     Categories
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a href="#about" className="mobile-nav-link" onClick={closeMobileMenu}>
+                  <button
+                    type="button"
+                    className="mobile-nav-link-btn"
+                    onClick={() => handleNavClick('about')}
+                  >
                     About
-                  </a>
+                  </button>
                 </li>
               </ul>
             </nav>

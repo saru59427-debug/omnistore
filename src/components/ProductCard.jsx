@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { ShoppingCart, Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ShoppingCart, Check, Star, Eye } from 'lucide-react';
 
 /**
  * ProductCard Component
  * Reusable card displaying an individual product's details:
- * image, title, category, formatted LKR pricing, and an interactive Add to Cart button.
+ * image, title, category, rating, formatted INR pricing,
+ * "View Details" navigation link to /product/:id,
+ * and an interactive Add to Cart button.
  *
  * @param {Object} props
- * @param {Object} props.product - The product object data
+ * @param {Object} props.product - The product object data (DummyJSON or custom)
  * @param {Function} props.onAddToCart - Callback triggered when user clicks Add to Cart
  */
 function ProductCard({ product, onAddToCart }) {
@@ -15,14 +18,20 @@ function ProductCard({ product, onAddToCart }) {
 
   if (!product) return null;
 
-  const {
-    name,
-    category,
-    price,
-    originalPrice,
-    image,
-    description
-  } = product;
+  const id = product.id;
+  const name = product.title || product.name || 'Untitled Product';
+  const category = product.category || 'General';
+  const price = product.price || 0;
+  const image = product.thumbnail || product.image || 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80';
+  const description = product.description || '';
+  const rating = product.rating || null;
+
+  // Calculate original price from discountPercentage if available
+  const originalPrice = product.originalPrice
+    ? product.originalPrice
+    : product.discountPercentage
+    ? Math.round(price / (1 - product.discountPercentage / 100))
+    : null;
 
   // Format prices in Indian Rupees (INR)
   const formatPrice = (amount) =>
@@ -31,10 +40,13 @@ function ProductCard({ product, onAddToCart }) {
   // Safe fallback placeholder if external image cannot be reached
   const handleImageError = (e) => {
     e.currentTarget.onerror = null;
-    e.currentTarget.src = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80';
+    e.currentTarget.src =
+      'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80';
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (onAddToCart) {
       onAddToCart(product);
       setJustAdded(true);
@@ -44,8 +56,8 @@ function ProductCard({ product, onAddToCart }) {
 
   return (
     <div className="product-card">
-      {/* Product Image Container with Zoom Effect */}
-      <div className="product-image-container">
+      {/* Product Image Container with Link to Product Detail */}
+      <Link to={`/product/${id}`} className="product-image-container" aria-label={`View details for ${name}`}>
         <img
           src={image}
           alt={name}
@@ -53,14 +65,29 @@ function ProductCard({ product, onAddToCart }) {
           loading="lazy"
           onError={handleImageError}
         />
-      </div>
+        {product.discountPercentage && (
+          <span className="product-discount-pill">
+            -{Math.round(product.discountPercentage)}%
+          </span>
+        )}
+      </Link>
 
       {/* Card Content Body */}
       <div className="product-content">
-        <span className="product-category">{category}</span>
+        <div className="product-meta-row">
+          <span className="product-category">{category}</span>
+          {rating && (
+            <div className="product-card-rating">
+              <Star size={13} className="star-filled" fill="currentColor" />
+              <span>{typeof rating === 'number' ? rating.toFixed(1) : rating}</span>
+            </div>
+          )}
+        </div>
 
         <h3 className="product-title" title={name}>
-          {name}
+          <Link to={`/product/${id}`} className="product-title-link">
+            {name}
+          </Link>
         </h3>
 
         <p className="product-description" title={description}>
@@ -75,8 +102,17 @@ function ProductCard({ product, onAddToCart }) {
           )}
         </div>
 
-        {/* Action Button: Add to Cart */}
+        {/* Action Buttons: View Details & Add to Cart */}
         <div className="product-actions">
+          <Link
+            to={`/product/${id}`}
+            className="btn btn-secondary view-details-btn"
+            title="View full product details"
+          >
+            <Eye size={15} className="btn-icon" />
+            <span>Details</span>
+          </Link>
+
           <button
             type="button"
             className={`add-to-cart-btn ${justAdded ? 'added' : ''}`}
@@ -91,7 +127,7 @@ function ProductCard({ product, onAddToCart }) {
             ) : (
               <>
                 <ShoppingCart size={16} className="btn-icon" />
-                <span>Add to Cart</span>
+                <span>Add</span>
               </>
             )}
           </button>
